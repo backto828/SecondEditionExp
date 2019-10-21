@@ -19,6 +19,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:onClick="confirmChange"
         android:id="@+id/bt_Confirm"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -30,6 +31,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <Button
+        android:onClick="cancelChange"
         android:id="@+id/bt_Cancel"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

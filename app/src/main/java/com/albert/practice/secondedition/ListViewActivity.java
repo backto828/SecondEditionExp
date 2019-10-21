@@ -1,6 +1,7 @@
 package com.albert.practice.secondedition;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.AlertDialog;
@@ -30,6 +31,8 @@ public class ListViewActivity extends AppCompatActivity {
     public static final int item_delete = Menu.FIRST + 1;
     public static final int item_update = Menu.FIRST + 2;
     public static final int item_about = Menu.FIRST + 3;
+    public static final int REQUEST_CODE_NEW_MEMBER = 901;
+    public static final int REQUEST_CODE_UPDATE_MEMBER = 902;
     private ListView lv_Members;
     private List<Member> listMembers = new ArrayList<>();
     private MemberAdapter theAdapter;
@@ -50,9 +53,9 @@ public class ListViewActivity extends AppCompatActivity {
 
     // 定义数据
     private void InitData() {
-        listMembers.add(new Member("路飞", "15亿", R.drawable.op_001));
-        listMembers.add(new Member("索隆", "3.2亿", R.drawable.op_002));
-        listMembers.add(new Member("山治", "3.3亿", R.drawable.op_003));
+        listMembers.add(new Member("LUFFY", "1500", R.drawable.op_001));
+        listMembers.add(new Member("ZORO", "320", R.drawable.op_002));
+        listMembers.add(new Member("SANJI", "330", R.drawable.op_003));
     }
 
     //上下文菜单
@@ -70,23 +73,65 @@ public class ListViewActivity extends AppCompatActivity {
         }
     }
 
+    // 重载onActivityResult，接收返回的数据
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch (requestCode) {
+            // 新建
+            case REQUEST_CODE_NEW_MEMBER:
+                if (resultCode == RESULT_OK) {
+                    String name = data.getStringExtra("姓名");
+                    String reword = data.getStringExtra("悬赏金");
+                    int insertPosition = data.getIntExtra("insert_position", 0);
+                    listMembers.add(insertPosition, new Member(name, reword, R.drawable.op_004));
+                    theAdapter.notifyDataSetChanged();
+                }
+                break;
+            // 修改
+            case REQUEST_CODE_UPDATE_MEMBER:
+                if (resultCode == RESULT_OK) {
+                    int insertPosition = data.getIntExtra("insert_position", 0);
+                    Member memberAtPosition = getListMembers().get(insertPosition);
+                    memberAtPosition.setName(data.getStringExtra("姓名"));
+                    memberAtPosition.setReword(data.getStringExtra("悬赏金"));
+                    theAdapter.notifyDataSetChanged();
+                }
+                break;
+        }
+    }
+
+    // 自己摸索出来的，对应上面getListMembers()
+    private List<Member> getListMembers() {
+        return listMembers;
+    }
+
     //上下文菜单响应事件
     @Override
     public boolean onContextItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
             // 新建
             case item_new: {
-                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-                listMembers.add(menuInfo.position,new Member("娜美","0.5亿",R.drawable.op_004));
-                theAdapter.notifyDataSetChanged();
-                Toast.makeText(this,"新建成功",Toast.LENGTH_SHORT).show();
+//                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
+                Intent intent = new Intent(this, NewMemberActivity.class);
+                intent.putExtra("姓名", "新成员");
+                intent.putExtra("悬赏金", "未设定");
+                intent.putExtra("insert_position", ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position);
+                startActivityForResult(intent, REQUEST_CODE_NEW_MEMBER);
+//                listMembers.add(menuInfo.position,new Member("娜美","0.5亿",R.drawable.op_004));
+//                theAdapter.notifyDataSetChanged();
+//                Toast.makeText(this,"新建成功",Toast.LENGTH_SHORT).show();
             }
             break;
             // 修改
             case item_update:
             {
-                Intent intent = new Intent(this, NewMemberActivity.class);
-                startActivity(intent);
+                int position = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
+                Intent intent2 = new Intent(this, NewMemberActivity.class);
+                intent2.putExtra("姓名", listMembers.get(position).getName());
+                intent2.putExtra("悬赏金", listMembers.get(position).getReword());
+                intent2.putExtra("insert_position", position);
+                startActivityForResult(intent2, REQUEST_CODE_UPDATE_MEMBER);
             }
             break;
             // 删除
@@ -138,7 +183,7 @@ public class ListViewActivity extends AppCompatActivity {
             View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
             ((ImageView) view.findViewById(R.id.iv_member_pic)).setImageResource(member.getPicResourceId());
             ((TextView) view.findViewById(R.id.tv_member_name)).setText(member.getName());
-            ((TextView) view.findViewById(R.id.tv_member_reword)).setText(member.getReword());
+            ((TextView) view.findViewById(R.id.tv_member_reword)).setText(member.getReword() + "M");
             return view;
         }
     }
