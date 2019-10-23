@@ -3,6 +3,8 @@ package com.albert.practice.secondedition;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.viewpager.widget.ViewPager;
 
 import android.app.AlertDialog;
 import android.content.Context;
@@ -22,8 +24,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.albert.practice.secondedition.data.MemberFragmentAdapter;
+import com.albert.practice.secondedition.data.MemberListFragment;
 import com.albert.practice.secondedition.data.MemberSaver;
 import com.albert.practice.secondedition.data.model.Member;
+import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -36,9 +41,8 @@ public class ListViewActivity extends AppCompatActivity {
     public static final int item_about = Menu.FIRST + 3;
     public static final int REQUEST_CODE_NEW_MEMBER = 901;
     public static final int REQUEST_CODE_UPDATE_MEMBER = 902;
-    private ListView lv_Members;
     private List<Member> listMembers = new ArrayList<>();
-    private MemberAdapter theAdapter;
+    MemberAdapter theAdapter;
     MemberSaver memberSaver;
 
     @Override
@@ -58,12 +62,29 @@ public class ListViewActivity extends AppCompatActivity {
         listMembers = memberSaver.load();
         if (listMembers.size() == 0)
             InitData();// 定义数据
-        lv_Members = findViewById(R.id.lv_StrawHat);
         // 数组适配器
         theAdapter = new MemberAdapter(ListViewActivity.this, R.layout.member_list_view, listMembers);
-        lv_Members.setAdapter(theAdapter);
-        // 注册上下文菜单
-        this.registerForContextMenu(lv_Members);
+
+        MemberFragmentAdapter myPageAdapter = new MemberFragmentAdapter(getSupportFragmentManager());
+
+        ArrayList<Fragment> datas = new ArrayList<Fragment>();
+        datas.add(new MemberListFragment(theAdapter));
+        datas.add(new MemberListFragment(theAdapter));
+        myPageAdapter.setData(datas);
+
+        ArrayList<String> titles = new ArrayList<String>();
+        titles.add("A");
+        titles.add("B");
+        myPageAdapter.setTitles(titles);
+
+        // 使ViewPager和TabLayout相关联
+        TabLayout tabLayout = findViewById(R.id.tablayout);
+        ViewPager viewPager = findViewById(R.id.view_pager);
+        // 将适配器设置进ViewPager
+        viewPager.setAdapter(myPageAdapter);
+        // 将ViewPager与TabLayout相关联
+        tabLayout.setupWithViewPager(viewPager);
+
     }
 
     // 定义数据
@@ -77,7 +98,7 @@ public class ListViewActivity extends AppCompatActivity {
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (v == lv_Members) {
+        if (v == findViewById(R.id.lv_StrawHat)) {
             int itemPosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position;
             menu.setHeaderTitle(listMembers.get(itemPosition).getName());
             //添加菜单项
@@ -176,7 +197,7 @@ public class ListViewActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
-    class MemberAdapter extends ArrayAdapter<Member> {
+    public class MemberAdapter extends ArrayAdapter<Member> {
 
         private int resourceId;
 
