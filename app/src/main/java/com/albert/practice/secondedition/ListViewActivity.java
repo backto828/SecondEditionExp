@@ -22,6 +22,9 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.albert.practice.secondedition.data.MemberSaver;
+import com.albert.practice.secondedition.data.model.Member;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -36,13 +39,25 @@ public class ListViewActivity extends AppCompatActivity {
     private ListView lv_Members;
     private List<Member> listMembers = new ArrayList<>();
     private MemberAdapter theAdapter;
+    MemberSaver memberSaver;
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        // 保存数据
+        memberSaver.save();
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_list_view);
-        // 定义数据
-        InitData();
+
+        // 调用加载数据的函数
+        memberSaver = new MemberSaver(this);
+        listMembers = memberSaver.load();
+        if (listMembers.size() == 0)
+            InitData();// 定义数据
         lv_Members = findViewById(R.id.lv_StrawHat);
         // 数组适配器
         theAdapter = new MemberAdapter(ListViewActivity.this, R.layout.member_list_view, listMembers);
@@ -86,24 +101,21 @@ public class ListViewActivity extends AppCompatActivity {
                     int insertPosition = data.getIntExtra("insert_position", 0);
                     listMembers.add(insertPosition, new Member(name, reword, R.drawable.op_004));
                     theAdapter.notifyDataSetChanged();
+                    Toast.makeText(this, "新建成功", Toast.LENGTH_SHORT).show();
                 }
                 break;
             // 修改
             case REQUEST_CODE_UPDATE_MEMBER:
                 if (resultCode == RESULT_OK) {
                     int insertPosition = data.getIntExtra("insert_position", 0);
-                    Member memberAtPosition = getListMembers().get(insertPosition);
+                    Member memberAtPosition = listMembers.get(insertPosition);
                     memberAtPosition.setName(data.getStringExtra("姓名"));
                     memberAtPosition.setReword(data.getStringExtra("悬赏金"));
                     theAdapter.notifyDataSetChanged();
+                    Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
                 }
                 break;
         }
-    }
-
-    // 自己摸索出来的，对应上面getListMembers()
-    private List<Member> getListMembers() {
-        return listMembers;
     }
 
     //上下文菜单响应事件
@@ -114,13 +126,10 @@ public class ListViewActivity extends AppCompatActivity {
             case item_new: {
 //                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
                 Intent intent = new Intent(this, NewMemberActivity.class);
-                intent.putExtra("姓名", "新成员");
-                intent.putExtra("悬赏金", "未设定");
+                intent.putExtra("姓名", "");
+                intent.putExtra("悬赏金", "");
                 intent.putExtra("insert_position", ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position);
                 startActivityForResult(intent, REQUEST_CODE_NEW_MEMBER);
-//                listMembers.add(menuInfo.position,new Member("娜美","0.5亿",R.drawable.op_004));
-//                theAdapter.notifyDataSetChanged();
-//                Toast.makeText(this,"新建成功",Toast.LENGTH_SHORT).show();
             }
             break;
             // 修改

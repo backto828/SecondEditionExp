@@ -1,15 +1,18 @@
-package com.albert.practice.secondedition;
+package com.albert.practice.secondedition.data.model;
 
-public class Member {
+import java.io.Serializable;
+
+public class Member implements Serializable {
+
+    private String name;
+    private String reword;
+    private int picResourceId;
+
     public Member(String name, String reword, int picResourceId) {
         this.setName(name);
         this.setReword(reword);
         this.setPicResourceId(picResourceId);
     }
-
-    private String name;
-    private String reword;
-    private int picResourceId;
 
     public String getName() {
         return name;
