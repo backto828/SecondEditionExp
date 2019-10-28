@@ -16,11 +16,11 @@ import com.albert.practice.secondedition.R;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class MemberListFragment extends Fragment {
+public class BookListFragment extends Fragment {
 
-    private ListViewActivity.MemberAdapter theAdapter;
+    private ListViewActivity.BookAdapter theAdapter;
 
-    public MemberListFragment(ListViewActivity.MemberAdapter theAdapter) {
+    public BookListFragment(ListViewActivity.BookAdapter theAdapter) {
         // Required empty public constructor
         this.theAdapter = theAdapter;
     }
@@ -30,11 +30,11 @@ public class MemberListFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_member_list, container, false);
-        ListView lv_Members = view.findViewById(R.id.lv_StrawHat);
-        lv_Members.setAdapter(theAdapter);
+        View view = inflater.inflate(R.layout.fragment_book_list, container, false);
+        ListView lv_Books = view.findViewById(R.id.lv_BookList);
+        lv_Books.setAdapter(theAdapter);
         // 注册上下文菜单
-        this.registerForContextMenu(lv_Members);
+        this.registerForContextMenu(lv_Books);
         // Inflate the layout for this fragment
         return view;
     }

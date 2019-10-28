@@ -4,12 +4,12 @@
     android:layout_height="match_parent">
 
     <ImageView
-        android:id="@+id/iv_member_pic"
+        android:id="@+id/iv_book_pic"
         android:layout_width="64sp"
         android:layout_height="64sp" />
 
     <TextView
-        android:id="@+id/tv_member_name"
+        android:id="@+id/tv_book_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:gravity="center"
@@ -20,7 +20,7 @@
         android:textSize="20sp" />
 
     <TextView
-        android:id="@+id/tv_member_reword"
+        android:id="@+id/tv_book_reword"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center_vertical"

@@ -6,13 +6,13 @@ import androidx.fragment.app.FragmentPagerAdapter;
 
 import java.util.ArrayList;
 
-public class MemberFragmentAdapter extends FragmentPagerAdapter {
+public class BookFragmentAdapter extends FragmentPagerAdapter {
     // 存放要显示的子试图
     ArrayList<Fragment> datas;
     // 存放要显示的标题
     ArrayList<String> titles;
 
-    public MemberFragmentAdapter(FragmentManager fm) {
+    public BookFragmentAdapter(FragmentManager fm) {
         super(fm);
     }
 

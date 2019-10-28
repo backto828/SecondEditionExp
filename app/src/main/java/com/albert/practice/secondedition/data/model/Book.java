@@ -2,15 +2,15 @@ package com.albert.practice.secondedition.data.model;
 
 import java.io.Serializable;
 
-public class Member implements Serializable {
+public class Book implements Serializable {
 
     private String name;
-    private String reword;
+    private String price;
     private int picResourceId;
 
-    public Member(String name, String reword, int picResourceId) {
+    public Book(String name, String price, int picResourceId) {
         this.setName(name);
-        this.setReword(reword);
+        this.setPrice(price);
         this.setPicResourceId(picResourceId);
     }
 
@@ -22,12 +22,12 @@ public class Member implements Serializable {
         this.name = name;
     }
 
-    public String getReword() {
-        return reword;
+    public String getPrice() {
+        return price;
     }
 
-    public void setReword(String reword) {
-        this.reword = reword;
+    public void setPrice(String price) {
+        this.price = price;
     }
 
     public int getPicResourceId() {

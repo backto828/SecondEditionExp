@@ -20,14 +20,13 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
-import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.albert.practice.secondedition.data.MemberFragmentAdapter;
-import com.albert.practice.secondedition.data.MemberListFragment;
-import com.albert.practice.secondedition.data.MemberSaver;
-import com.albert.practice.secondedition.data.model.Member;
+import com.albert.practice.secondedition.data.BookFragmentAdapter;
+import com.albert.practice.secondedition.data.BookListFragment;
+import com.albert.practice.secondedition.data.BookSaver;
+import com.albert.practice.secondedition.data.model.Book;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -39,17 +38,17 @@ public class ListViewActivity extends AppCompatActivity {
     public static final int item_delete = Menu.FIRST + 1;
     public static final int item_update = Menu.FIRST + 2;
     public static final int item_about = Menu.FIRST + 3;
-    public static final int REQUEST_CODE_NEW_MEMBER = 901;
-    public static final int REQUEST_CODE_UPDATE_MEMBER = 902;
-    private List<Member> listMembers = new ArrayList<>();
-    MemberAdapter theAdapter;
-    MemberSaver memberSaver;
+    public static final int REQUEST_CODE_NEW_BOOK = 901;
+    public static final int REQUEST_CODE_UPDATE_BOOK = 902;
+    private List<Book> listBooks = new ArrayList<>();
+    BookAdapter bookAdapter;
+    BookSaver bookSaver;
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
         // 保存数据
-        memberSaver.save();
+        bookSaver.save();
     }
 
     @Override
@@ -58,18 +57,18 @@ public class ListViewActivity extends AppCompatActivity {
         setContentView(R.layout.activity_list_view);
 
         // 调用加载数据的函数
-        memberSaver = new MemberSaver(this);
-        listMembers = memberSaver.load();
-        if (listMembers.size() == 0)
+        bookSaver = new BookSaver(this);
+        listBooks = bookSaver.load();
+        if (listBooks.size() == 0)
             InitData();// 定义数据
         // 数组适配器
-        theAdapter = new MemberAdapter(ListViewActivity.this, R.layout.member_list_view, listMembers);
+        bookAdapter = new BookAdapter(ListViewActivity.this, R.layout.book_list_view, listBooks);
 
-        MemberFragmentAdapter myPageAdapter = new MemberFragmentAdapter(getSupportFragmentManager());
+        BookFragmentAdapter myPageAdapter = new BookFragmentAdapter(getSupportFragmentManager());
 
         ArrayList<Fragment> datas = new ArrayList<Fragment>();
-        datas.add(new MemberListFragment(theAdapter));
-        datas.add(new MemberListFragment(theAdapter));
+        datas.add(new BookListFragment(bookAdapter));
+        datas.add(new BookListFragment(bookAdapter));
         myPageAdapter.setData(datas);
 
         ArrayList<String> titles = new ArrayList<String>();
@@ -89,18 +88,18 @@ public class ListViewActivity extends AppCompatActivity {
 
     // 定义数据
     private void InitData() {
-        listMembers.add(new Member("LUFFY", "1500", R.drawable.op_001));
-        listMembers.add(new Member("ZORO", "320", R.drawable.op_002));
-        listMembers.add(new Member("SANJI", "330", R.drawable.op_003));
+        listBooks.add(new Book("book1", "40", R.drawable.book_001));
+        listBooks.add(new Book("book2", "30", R.drawable.book_002));
+        listBooks.add(new Book("book3", "33", R.drawable.book_003));
     }
 
     //上下文菜单
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu(menu, v, menuInfo);
-        if (v == findViewById(R.id.lv_StrawHat)) {
+        if (v == findViewById(R.id.lv_BookList)) {
             int itemPosition = ((AdapterView.AdapterContextMenuInfo) menuInfo).position;
-            menu.setHeaderTitle(listMembers.get(itemPosition).getName());
+            menu.setHeaderTitle(listBooks.get(itemPosition).getName());
             //添加菜单项
             menu.add(0, item_new, 0, "新建");
             menu.add(0,item_update,0,"修改");
@@ -115,24 +114,24 @@ public class ListViewActivity extends AppCompatActivity {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
             // 新建
-            case REQUEST_CODE_NEW_MEMBER:
+            case REQUEST_CODE_NEW_BOOK:
                 if (resultCode == RESULT_OK) {
                     String name = data.getStringExtra("姓名");
-                    String reword = data.getStringExtra("悬赏金");
+                    String reword = data.getStringExtra("价格");
                     int insertPosition = data.getIntExtra("insert_position", 0);
-                    listMembers.add(insertPosition, new Member(name, reword, R.drawable.op_004));
-                    theAdapter.notifyDataSetChanged();
+                    listBooks.add(insertPosition, new Book(name, reword, R.drawable.book_004));
+                    bookAdapter.notifyDataSetChanged();
                     Toast.makeText(this, "新建成功", Toast.LENGTH_SHORT).show();
                 }
                 break;
             // 修改
-            case REQUEST_CODE_UPDATE_MEMBER:
+            case REQUEST_CODE_UPDATE_BOOK:
                 if (resultCode == RESULT_OK) {
                     int insertPosition = data.getIntExtra("insert_position", 0);
-                    Member memberAtPosition = listMembers.get(insertPosition);
-                    memberAtPosition.setName(data.getStringExtra("姓名"));
-                    memberAtPosition.setReword(data.getStringExtra("悬赏金"));
-                    theAdapter.notifyDataSetChanged();
+                    Book bookAtPosition = listBooks.get(insertPosition);
+                    bookAtPosition.setName(data.getStringExtra("姓名"));
+                    bookAtPosition.setPrice(data.getStringExtra("价格"));
+                    bookAdapter.notifyDataSetChanged();
                     Toast.makeText(this, "修改成功", Toast.LENGTH_SHORT).show();
                 }
                 break;
@@ -146,22 +145,22 @@ public class ListViewActivity extends AppCompatActivity {
             // 新建
             case item_new: {
 //                AdapterView.AdapterContextMenuInfo menuInfo = (AdapterView.AdapterContextMenuInfo)item.getMenuInfo();
-                Intent intent = new Intent(this, NewMemberActivity.class);
+                Intent intent = new Intent(this, NewBookActivity.class);
                 intent.putExtra("姓名", "");
-                intent.putExtra("悬赏金", "");
+                intent.putExtra("价格", "");
                 intent.putExtra("insert_position", ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position);
-                startActivityForResult(intent, REQUEST_CODE_NEW_MEMBER);
+                startActivityForResult(intent, REQUEST_CODE_NEW_BOOK);
             }
             break;
             // 修改
             case item_update:
             {
                 int position = ((AdapterView.AdapterContextMenuInfo) item.getMenuInfo()).position;
-                Intent intent2 = new Intent(this, NewMemberActivity.class);
-                intent2.putExtra("姓名", listMembers.get(position).getName());
-                intent2.putExtra("悬赏金", listMembers.get(position).getReword());
+                Intent intent2 = new Intent(this, NewBookActivity.class);
+                intent2.putExtra("姓名", listBooks.get(position).getName());
+                intent2.putExtra("价格", listBooks.get(position).getPrice());
                 intent2.putExtra("insert_position", position);
-                startActivityForResult(intent2, REQUEST_CODE_UPDATE_MEMBER);
+                startActivityForResult(intent2, REQUEST_CODE_UPDATE_BOOK);
             }
             break;
             // 删除
@@ -175,8 +174,8 @@ public class ListViewActivity extends AppCompatActivity {
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
-                                listMembers.remove(itemPosition);
-                                theAdapter.notifyDataSetChanged();
+                                listBooks.remove(itemPosition);
+                                bookAdapter.notifyDataSetChanged();
                                 Toast.makeText(ListViewActivity.this,"删除成功",Toast.LENGTH_SHORT).show();
                             }
                         })
@@ -197,11 +196,11 @@ public class ListViewActivity extends AppCompatActivity {
         return super.onContextItemSelected(item);
     }
 
-    public class MemberAdapter extends ArrayAdapter<Member> {
+    public class BookAdapter extends ArrayAdapter<Book> {
 
         private int resourceId;
 
-        public MemberAdapter(Context context, int resource, List<Member> objects) {
+        public BookAdapter(Context context, int resource, List<Book> objects) {
             super(context, resource, objects);
             resourceId = resource;
         }
@@ -209,11 +208,11 @@ public class ListViewActivity extends AppCompatActivity {
         @NonNull
         @Override
         public View getView(int position, View convertView, ViewGroup parent) {
-            Member member = getItem(position);//获取当前项的实例
+            Book book = getItem(position);//获取当前项的实例
             View view = LayoutInflater.from(getContext()).inflate(resourceId, parent, false);
-            ((ImageView) view.findViewById(R.id.iv_member_pic)).setImageResource(member.getPicResourceId());
-            ((TextView) view.findViewById(R.id.tv_member_name)).setText(member.getName());
-            ((TextView) view.findViewById(R.id.tv_member_reword)).setText(member.getReword() + "M");
+            ((ImageView) view.findViewById(R.id.iv_book_pic)).setImageResource(book.getPicResourceId());
+            ((TextView) view.findViewById(R.id.tv_book_name)).setText(book.getName());
+            ((TextView) view.findViewById(R.id.tv_book_reword)).setText(book.getPrice() + " 元");
             return view;
         }
     }
